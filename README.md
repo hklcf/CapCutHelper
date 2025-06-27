@@ -17,7 +17,7 @@ Follow these steps in CapCut to create and export Compound Clips using free feat
 
 The script then finds and opens the latest `combination` folder containing the processed clip data.
 
-## Tutorial
+## Limitations
 - Exported videos are limited to 1080p resolution and 30fps.
 
 ## Usage
