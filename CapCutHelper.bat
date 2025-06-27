@@ -9,6 +9,8 @@ echo 3. Right-click on any clips and select "Create Compound Clip (Subproject)" 
 echo 4. Right-click on the compound clip and select "Pre-process Compound Clip (Subproject)".
 echo 5. Wait for processing to complete.
 echo.
+echo Limitation: Exported videos are limited to 1080p resolution and 30fps.
+echo.
 echo Press any key to search for the latest "combination" folder...
 pause >nul
 
