@@ -11,30 +11,35 @@ echo 5. Wait for processing to complete.
 echo.
 echo Limitation: Exported videos are limited to 1080p resolution and 30fps.
 echo.
-echo Press any key to search for the latest "combination" folder...
+echo Press any key to search for the latest project folder and its Resources\combination subfolder...
 pause >nul
 
 set "searchDir=%LocalAppData%\CapCut\User Data\Projects\com.lveditor.draft"
-set "searchTerm=combination"
 
+:: Check if the search directory exists
 if not exist "%searchDir%" (
     echo Directory "%searchDir%" does not exist.
+    pause
     exit /b
 )
 
+:: Initialize variables
 set "latestFolder="
 set "latestTime=0"
 
-:: Search recursively for folders named exactly "combination"
-for /r "%searchDir%" /d %%i in (*combination*) do (
-    set "folder=%%i"
-    :: Check if the folder name is exactly "combination"
-    if /i "%%~nxi"=="combination" (
-        for %%a in ("%%i") do set "mtime=%%~ta"
+:: Find the most recently modified folder in the search directory (non-recursive)
+for /f "delims=" %%i in ('dir "%searchDir%" /a:d /o:-d /b') do (
+    :: Skip .recycle_bin folder
+    if /i not "%%i"==".recycle_bin" (
+        set "folder=%searchDir%\%%i"
+        :: Get the modification time of the folder
+        for %%a in ("!folder!") do set "mtime=%%~ta"
+        :: Convert modification time to a comparable format (YYYYMMDDHHMM)
         set "mtime=!mtime:/=!"
         set "mtime=!mtime::=!"
         set "mtime=!mtime: =!"
         
+        :: Compare to find the newest folder
         if !mtime! gtr !latestTime! (
             set "latestTime=!mtime!"
             set "latestFolder=!folder!"
@@ -42,13 +47,23 @@ for /r "%searchDir%" /d %%i in (*combination*) do (
     )
 )
 
+:: Check if a folder was found
 if "!latestFolder!"=="" (
-    echo No folder named "combination" was found.
+    echo No project folder was found in "%searchDir%".
     pause
 ) else (
-    echo Most recently modified "combination" folder: "!latestFolder!"
-    :: Open the folder in Windows Explorer
-    explorer "!latestFolder!"
+    :: Append \Resources\combination to the latest folder
+    set "combinationFolder=!latestFolder!\Resources\combination"
+    :: Check if the Resources\combination folder exists
+    if exist "!combinationFolder!" (
+        echo Most recently modified project folder: "!latestFolder!"
+        echo Opening: "!combinationFolder!"
+        :: Open the combination folder in Windows Explorer
+        explorer "!combinationFolder!"
+    ) else (
+        echo Resources\combination folder not found in "!latestFolder!".
+        pause
+    )
 )
 
 endlocal
